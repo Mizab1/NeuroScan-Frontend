@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import { Upload, FileUp, AlertTriangle, Image as ImageIcon, Sparkles } from 'lucide-react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { Upload, AlertTriangle, Sparkles } from 'lucide-react';
 import { validateImageFile } from '@/lib/image-utils';
 
 interface DropzoneProps {
@@ -16,6 +16,21 @@ export const Dropzone: React.FC<DropzoneProps> = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProcessFile = useCallback(
+    async (file: File) => {
+      setValidationError(null);
+      const result = await validateImageFile(file);
+
+      if (!result.isValid || !result.dataUrl) {
+        setValidationError(result.error || 'Invalid MRI image file.');
+        return;
+      }
+
+      onImageSelected(result.dataUrl, file.name, file);
+    },
+    [onImageSelected]
+  );
 
   // Handle global or element paste
   useEffect(() => {
@@ -37,19 +52,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({
 
     window.addEventListener('paste', handlePaste);
     return () => window.removeEventListener('paste', handlePaste);
-  }, [disabled]);
-
-  const handleProcessFile = async (file: File) => {
-    setValidationError(null);
-    const result = await validateImageFile(file);
-
-    if (!result.isValid || !result.dataUrl) {
-      setValidationError(result.error || 'Invalid MRI image file.');
-      return;
-    }
-
-    onImageSelected(result.dataUrl, file.name, file);
-  };
+  }, [disabled, handleProcessFile]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();

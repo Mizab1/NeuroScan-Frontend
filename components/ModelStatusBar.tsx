@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AlertCircle, CheckCircle2, Cpu, Database, Flame, Loader2, Sparkles, UploadCloud } from 'lucide-react';
+import { AlertCircle, Cpu, Database, Flame, Loader2, UploadCloud } from 'lucide-react';
 import { ModelStatusInfo } from '@/lib/types';
 
 interface ModelStatusBarProps {

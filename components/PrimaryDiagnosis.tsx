@@ -3,9 +3,6 @@
 import React from 'react';
 import {
   AlertOctagon,
-  AlertTriangle,
-  CheckCircle2,
-  HelpCircle,
   ShieldCheck,
   Zap,
   FileText

@@ -12,24 +12,10 @@ import { BenchmarkMetrics } from "@/components/BenchmarkMetrics";
 import { ModelInfoModal } from "@/components/ModelInfoModal";
 import { ReportModal } from "@/components/ReportModal";
 
-import { loadNeuroScanModel, getLoadedModel, getTfMemoryInfo } from "@/lib/tf-loader";
+import { loadNeuroScanModel, getTfMemoryInfo } from "@/lib/tf-loader";
 import { runModelInference, runSimulatedInference } from "@/lib/tf-inference";
 import { ModelStatusInfo, InferenceResult, SamplePreset, TumorClass } from "@/lib/types";
-import {
-  Activity,
-  AlertTriangle,
-  Brain,
-  CheckCircle2,
-  Cpu,
-  FileText,
-  HelpCircle,
-  Layers,
-  Lock,
-  Microscope,
-  Shield,
-  Sparkles,
-  Zap
-} from "lucide-react";
+import { Lock, Microscope, Shield } from "lucide-react";
 import type * as tf from "@tensorflow/tfjs";
 
 export default function NeuroScanPage() {
@@ -71,8 +57,26 @@ export default function NeuroScanPage() {
   }, []);
 
   useEffect(() => {
-    initModel();
-  }, [initModel]);
+    let isMounted = true;
+
+    const startInit = async () => {
+      const model = await loadNeuroScanModel((status) => {
+        if (!isMounted) return;
+        setModelStatus(status);
+        setActiveTensors(status.memoryTensors || 0);
+      });
+      if (!isMounted) return;
+      setLoadedModel(model);
+      const mem = getTfMemoryInfo();
+      setActiveTensors(mem.tensors);
+    };
+
+    void startInit();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle user uploaded image
   const handleImageSelected = (dataUrl: string, fileName: string) => {

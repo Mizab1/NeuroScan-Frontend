@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, CheckCircle2 } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 import { ClassProbability } from '@/lib/types';
-import { CLASS_METADATA } from '@/lib/constants';
 
 interface ClassProbabilityBarsProps {
   probabilities: ClassProbability[];

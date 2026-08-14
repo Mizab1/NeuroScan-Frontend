@@ -65,7 +65,7 @@ export const BenchmarkMetrics: React.FC<BenchmarkMetricsProps> = ({
             <Layers className="h-3 w-3 text-emerald-600" /> Memory Guard
           </span>
           <span className="font-mono text-xs font-bold text-emerald-700 mt-1">
-            tf.tidy active
+            {activeTensors === 0 ? 'tf.tidy active (0 leak)' : `${activeTensors} active tensors`}
           </span>
         </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Printer, ShieldAlert, CheckCircle2, FileText, Brain } from 'lucide-react';
+import { X, Printer, FileText, Brain } from 'lucide-react';
 import { InferenceResult } from '@/lib/types';
 import { CLASS_METADATA } from '@/lib/constants';
 

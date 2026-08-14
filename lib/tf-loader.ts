@@ -122,8 +122,9 @@ export async function loadNeuroScanModel(
         if (!checkRes.ok && checkRes.status === 404) {
           throw new Error('MODEL_NOT_FOUND');
         }
-      } catch (fetchErr: any) {
-        if (fetchErr.message === 'MODEL_NOT_FOUND' || fetchErr.status === 404) {
+      } catch (fetchErr: unknown) {
+        const errorMsg = fetchErr instanceof Error ? fetchErr.message : '';
+        if (errorMsg === 'MODEL_NOT_FOUND') {
           onStatusUpdate({
             state: 'model-missing',
             backend,
@@ -191,13 +192,14 @@ export async function loadNeuroScanModel(
     });
 
     return model;
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error in loadNeuroScanModel:', err);
 
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     const is404 =
-      err.message?.includes('404') ||
-      err.message?.includes('MODEL_NOT_FOUND') ||
-      err.message?.includes('Failed to fetch');
+      errorMessage.includes('404') ||
+      errorMessage.includes('MODEL_NOT_FOUND') ||
+      errorMessage.includes('Failed to fetch');
 
     onStatusUpdate({
       state: is404 ? 'model-missing' : 'error',
@@ -206,7 +208,7 @@ export async function loadNeuroScanModel(
       isCachedInIndexedDB: false,
       errorMessage: is404
         ? 'Model files not found in public/tfjs_model/. Please drop model.json and weight shards into public/tfjs_model/.'
-        : `Model initialization failed: ${err.message || 'Unknown error'}`,
+        : `Model initialization failed: ${errorMessage}`,
       ...getTfMemoryInfo(),
     });
 

@@ -54,8 +54,6 @@ export async function runModelInference(
 export function runSimulatedInference(
   presetCategory?: TumorClass
 ): InferenceResult {
-  const startTime = performance.now();
-
   // Synthetic distribution reflecting the preset or high-contrast sample
   const targetCategory = presetCategory || 'No Tumor';
   const probs: number[] = [0.05, 0.05, 0.05, 0.05];

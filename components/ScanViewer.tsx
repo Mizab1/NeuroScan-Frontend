@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Trash2, Play, Loader2, Scan } from 'lucide-react';
 
 interface ScanViewerProps {
