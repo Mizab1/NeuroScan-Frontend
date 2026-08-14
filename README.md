@@ -119,7 +119,11 @@ flowchart TD
     J --> K[System Ready for Inference]
 
     L[User Selects / Drops MRI Image] --> M[Validate Format & Dimensions]
-    K & M --> N[Trigger Inference in tf.tidy]
+    
+    %% Split the K & M --> N into two explicit lines to prevent layout crashing
+    K --> N[Trigger Inference in tf.tidy]
+    M --> N
+    
     N --> O["1. tf.browser.fromPixels(img, 3)"]
     O --> P["2. tf.image.resizeBilinear([256, 256])"]
     P --> Q["3. .toFloat().div(255.0)"]
