@@ -76,14 +76,14 @@ export const DEFAULT_ADJUSTMENTS: ImageAdjustments = {
   zoom: 1.0,
 };
 
-// Preset sample MRI scans
+// Preset sample MRI scans pointing to public/preset/images/
 export const SAMPLE_PRESETS: SamplePreset[] = [
   {
     id: 'preset-glioma',
     label: 'Glioma Case A',
     category: 'Glioma',
     description: 'T1 post-contrast axial slice with left fronto-temporal mass effect',
-    imageSrc: '/samples/glioma_sample.png',
+    imageSrc: '/preset/images/glioma_tumor.jpg',
     viewType: 'Axial T1+C',
   },
   {
@@ -91,7 +91,7 @@ export const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Meningioma Case B',
     category: 'Meningioma',
     description: 'Parasagittal extra-axial lesion with marked dural attachment',
-    imageSrc: '/samples/meningioma_sample.png',
+    imageSrc: '/preset/images/meningioma_tumor.jpg',
     viewType: 'Axial T1+C',
   },
   {
@@ -99,7 +99,7 @@ export const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Normal Scan C',
     category: 'No Tumor',
     description: 'Unremarkable brain MRI, normal ventricular symmetry and sulcal pattern',
-    imageSrc: '/samples/notumor_sample.png',
+    imageSrc: '/preset/images/normal_brain.jpg',
     viewType: 'Axial T2/FLAIR',
   },
   {
@@ -107,7 +107,7 @@ export const SAMPLE_PRESETS: SamplePreset[] = [
     label: 'Pituitary Case D',
     category: 'Pituitary',
     description: 'Sellar region mass expanding into suprasellar cistern',
-    imageSrc: '/samples/pituitary_sample.png',
+    imageSrc: '/preset/images/pituitary_tumor.jpg',
     viewType: 'Coronal T1+C',
   },
 ];

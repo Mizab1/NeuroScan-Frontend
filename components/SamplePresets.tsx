@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Sparkles, Brain, Check, Play } from 'lucide-react';
+import React from 'react';
+import { Brain, Check } from 'lucide-react';
 import { SAMPLE_PRESETS, CLASS_METADATA } from '@/lib/constants';
-import { SamplePreset, TumorClass } from '@/lib/types';
-import { generateProceduralMRIDataUrl } from '@/lib/image-utils';
+import { SamplePreset } from '@/lib/types';
 
 interface SamplePresetsProps {
   onSelectPreset: (dataUrl: string, preset: SamplePreset) => void;
@@ -17,26 +16,9 @@ export const SamplePresets: React.FC<SamplePresetsProps> = ({
   selectedPresetId,
   disabled = false,
 }) => {
-  const [presetThumbnails, setPresetThumbnails] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const thumbs: Record<string, string> = {
-      'preset-glioma': generateProceduralMRIDataUrl('glioma'),
-      'preset-meningioma': generateProceduralMRIDataUrl('meningioma'),
-      'preset-healthy': generateProceduralMRIDataUrl('healthy'),
-      'preset-pituitary': generateProceduralMRIDataUrl('pituitary'),
-    };
-    setPresetThumbnails(thumbs);
-  }, []);
-
   const handleSelect = (preset: SamplePreset) => {
     if (disabled) return;
-    const dataUrl = presetThumbnails[preset.id] || generateProceduralMRIDataUrl(
-      preset.category === 'Glioma' ? 'glioma' :
-      preset.category === 'Meningioma' ? 'meningioma' :
-      preset.category === 'No Tumor' ? 'healthy' : 'pituitary'
-    );
-    onSelectPreset(dataUrl, preset);
+    onSelectPreset(preset.imageSrc, preset);
   };
 
   return (
@@ -55,7 +37,6 @@ export const SamplePresets: React.FC<SamplePresetsProps> = ({
         {SAMPLE_PRESETS.map((preset) => {
           const isSelected = selectedPresetId === preset.id;
           const meta = CLASS_METADATA[preset.category];
-          const thumbSrc = presetThumbnails[preset.id];
 
           return (
             <button
@@ -70,18 +51,12 @@ export const SamplePresets: React.FC<SamplePresetsProps> = ({
             >
               {/* Thumbnail with overlay badge */}
               <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-black border border-slate-200 mb-2">
-                {thumbSrc ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={thumbSrc}
-                    alt={preset.label}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400 text-xs">
-                    Loading...
-                  </div>
-                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={preset.imageSrc}
+                  alt={preset.label}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
 
                 {/* Case Badge */}
                 <div className="absolute top-1.5 left-1.5">
