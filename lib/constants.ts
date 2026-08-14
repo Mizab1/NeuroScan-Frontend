@@ -32,38 +32,38 @@ export const CLASS_METADATA: Record<
 > = {
   'No Tumor': {
     riskTier: 'healthy',
-    primaryColor: '#10B981',
-    badgeBg: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-    badgeBorder: 'border-emerald-500/40',
-    badgeText: 'text-emerald-300',
-    description: 'Normal anatomical structures without pathological mass effect or abnormal signal intensity.',
-    clinicalSummary: 'No focal mass, abnormal enhancement, or midline shift detected in standard view.',
+    primaryColor: '#059669',
+    badgeBg: 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    badgeBorder: 'border-emerald-300',
+    badgeText: 'text-emerald-800',
+    description: 'Normal anatomical brain structures without pathological mass effect or abnormal focal signal intensity.',
+    clinicalSummary: 'No focal mass, abnormal contrast enhancement, or midline shift detected.',
   },
   Glioma: {
     riskTier: 'critical',
-    primaryColor: '#EF4444',
-    badgeBg: 'bg-rose-500/10 border-rose-500/30 text-rose-400',
-    badgeBorder: 'border-rose-500/40',
-    badgeText: 'text-rose-300',
-    description: 'Intra-axial glial cell neoplasm arising from supportive brain tissue, often displaying infiltrative margins.',
-    clinicalSummary: 'High probability of intra-axial neoplastic proliferation. Suggest immediate neurological consultation.',
+    primaryColor: '#DC2626',
+    badgeBg: 'bg-rose-50 border-rose-300 text-rose-800',
+    badgeBorder: 'border-rose-300',
+    badgeText: 'text-rose-800',
+    description: 'Intra-axial glial cell neoplasm arising from supportive brain tissue, displaying infiltrative margins.',
+    clinicalSummary: 'High probability of intra-axial neoplastic proliferation. Immediate neurological consultation advised.',
   },
   Meningioma: {
     riskTier: 'caution',
-    primaryColor: '#F59E0B',
-    badgeBg: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
-    badgeBorder: 'border-amber-500/40',
-    badgeText: 'text-amber-300',
-    description: 'Predominantly extra-axial mass arising from arachnoid cap cells of the meninges, often dural-based.',
+    primaryColor: '#D97706',
+    badgeBg: 'bg-amber-50 border-amber-300 text-amber-800',
+    badgeBorder: 'border-amber-300',
+    badgeText: 'text-amber-800',
+    description: 'Predominantly extra-axial mass arising from arachnoid cap cells of the meninges, dural-based.',
     clinicalSummary: 'Likely extra-axial dural-based mass. Recommend contrast-enhanced MR characterization.',
   },
   Pituitary: {
     riskTier: 'caution',
-    primaryColor: '#8B5CF6',
-    badgeBg: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400',
-    badgeBorder: 'border-indigo-500/40',
-    badgeText: 'text-indigo-300',
-    description: 'Sellar/parasellar region neoplasm originating within the anterior pituitary gland.',
+    primaryColor: '#7C3AED',
+    badgeBg: 'bg-purple-50 border-purple-300 text-purple-800',
+    badgeBorder: 'border-purple-300',
+    badgeText: 'text-purple-800',
+    description: 'Sellar/parasellar region neoplasm originating within the pituitary gland.',
     clinicalSummary: 'Sellar region enlargement or abnormal signal. Correlate with endocrinological panel.',
   },
 };
@@ -76,7 +76,7 @@ export const DEFAULT_ADJUSTMENTS: ImageAdjustments = {
   zoom: 1.0,
 };
 
-// Preset high-fidelity SVG/Base64 sample MRI scans
+// Preset sample MRI scans
 export const SAMPLE_PRESETS: SamplePreset[] = [
   {
     id: 'preset-glioma',
