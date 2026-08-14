@@ -33,15 +33,15 @@ All machine learning execution runs 100% inside the user's browser using `@tenso
 
 ## 🎯 Model Specifications & Input Contract
 
-| Parameter               | Specification                                                  |
-| :---------------------- | :------------------------------------------------------------- |
+| Parameter               | Specification                                                      |
+| :---------------------- | :----------------------------------------------------------------- |
 | **Model Format**        | TensorFlow.js Graph Model (`model.json` + quantized `.bin` shards) |
-| **Input Shape**         | `(1, 256, 256, 3)` (Batch: 1, Height: 256, Width: 256, RGB: 3) |
-| **Data Type**           | Float32 Tensor                                                 |
-| **Pixel Normalization** | $x \in [0.0, 1.0]$ via $x / 255.0$                             |
-| **Interpolation**       | Bilinear (`tf.image.resizeBilinear`)                           |
-| **Output Layer**        | 4-unit Softmax Distribution                                    |
-| **Target Classes**      | `0: Glioma`, `1: Meningioma`, `2: No Tumor`, `3: Pituitary`    |
+| **Input Shape**         | `(1, 256, 256, 3)` (Batch: 1, Height: 256, Width: 256, RGB: 3)     |
+| **Data Type**           | Float32 Tensor                                                     |
+| **Pixel Normalization** | $x \in [0.0, 1.0]$ via $x / 255.0$                                 |
+| **Interpolation**       | Bilinear (`tf.image.resizeBilinear`)                               |
+| **Output Layer**        | 4-unit Softmax Distribution                                        |
+| **Target Classes**      | `0: Glioma`, `1: Meningioma`, `2: No Tumor`, `3: Pituitary`        |
 
 ---
 
@@ -102,14 +102,48 @@ neuroscan/
 
 ---
 
+## 🔄️ Lifecycle Pipeline
+
+```mermaid
+flowchart TD
+    A[App Initialization] --> B{Check IndexedDB: 'indexeddb://neuroscan-model'}
+    B -- Found in Cache --> C[Load Cached Model from IndexedDB]
+    B -- Not Found --> D[Fetch from '/tfjs_model/model.json']
+    D --> E[Track Download Progress 0-100%]
+    E --> F[Compile Model in WebGL Engine]
+    F --> G[Save Model to IndexedDB for Future Runs]
+    C --> H[Model Warmup Phase]
+    G --> H
+    H --> I["Run Warmup Tensor: tf.zeros([1, 256, 256, 3])"]
+    I --> J[Pre-compile WebGL Shaders]
+    J --> K[System Ready for Inference]
+
+    L[User Selects / Drops MRI Image] --> M[Validate Format & Dimensions]
+    K & M --> N[Trigger Inference in tf.tidy]
+    N --> O["1. tf.browser.fromPixels(img, 3)"]
+    O --> P["2. tf.image.resizeBilinear([256, 256])"]
+    P --> Q["3. .toFloat().div(255.0)"]
+    Q --> R["4. .expandDims(0) -> [1, 256, 256, 3]"]
+    R --> S["5. model.predict(inputTensor)"]
+    S --> T["6. Extract Probabilities via .dataSync()"]
+    T --> U[tf.tidy automatically disposes all 5 intermediate tensors]
+    U --> V[Map Probabilities to 4 Classes & Sort]
+    V --> W[Render Diagnosis Badge & Probability Bars]
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Prerequisites
+
 - **Node.js**: v18.0.0 or higher
 - **npm** (or `pnpm` / `yarn` / `bun`)
 
 ### 2. Installation
+
 Clone the repository and install dependencies:
+
 ```bash
 git clone https://github.com/Mizab1/NeuroScan-V2.git
 cd NeuroScan-V2
@@ -117,12 +151,15 @@ npm install
 ```
 
 ### 3. Run Development Server
+
 ```bash
 npm run dev
 ```
+
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### 4. Production Build & Lint Checks
+
 ```bash
 npm run lint    # Code quality and TypeScript ESLint verification
 npm run build   # Next.js Turbopack production compilation
@@ -139,7 +176,9 @@ This repository includes a continuous integration and deployment pipeline ([`.gi
 2. **Vercel Production Deployment:** Automatically deploys production builds upon merges to `main`.
 
 ### Configuring GitHub Secrets for Vercel:
+
 Add the following secrets under **Repository Settings &rarr; Secrets and variables &rarr; Actions**:
+
 - `VERCEL_TOKEN`: Vercel Personal Access Token ([vercel.com/account/tokens](https://vercel.com/account/tokens))
 - `VERCEL_ORG_ID`: Team or Account ID (obtained via `npx vercel link` or account settings)
 - `VERCEL_PROJECT_ID`: Project ID (obtained via `npx vercel link` or project settings)
