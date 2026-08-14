@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import { MODEL_CONFIG } from './constants';
 import { ModelStatusInfo, ModelBackend } from './types';
 
-let cachedModel: tf.LayersModel | null = null;
+let cachedModel: tf.GraphModel | null = null;
 let currentBackend: ModelBackend = 'unknown';
 
 export async function initTensorFlowBackend(): Promise<ModelBackend> {
@@ -41,7 +41,7 @@ export function getTfMemoryInfo(): { tensors: number; bytes: number } {
   }
 }
 
-export function getLoadedModel(): tf.LayersModel | null {
+export function getLoadedModel(): tf.GraphModel | null {
   return cachedModel;
 }
 
@@ -57,7 +57,7 @@ export async function clearIndexedDBCache(): Promise<void> {
 
 export async function loadNeuroScanModel(
   onStatusUpdate: (status: ModelStatusInfo) => void
-): Promise<tf.LayersModel | null> {
+): Promise<tf.GraphModel | null> {
   if (typeof window === 'undefined') return null;
 
   const startTime = performance.now();
@@ -85,10 +85,10 @@ export async function loadNeuroScanModel(
       console.warn('Could not inspect IndexedDB models:', cacheCheckErr);
     }
 
-    let model: tf.LayersModel | null = null;
+    let model: tf.GraphModel | null = null;
 
     if (isCached) {
-      // 3A. Load from IndexedDB
+      // 3A. Load from IndexedDB using tf.loadGraphModel
       onStatusUpdate({
         state: 'compiling',
         backend,
@@ -98,7 +98,7 @@ export async function loadNeuroScanModel(
       });
 
       try {
-        model = await tf.loadLayersModel(MODEL_CONFIG.INDEXED_DB_URI);
+        model = await tf.loadGraphModel(MODEL_CONFIG.INDEXED_DB_URI);
       } catch (idbLoadErr) {
         console.warn('Corrupted IndexedDB model, purging and loading from URL:', idbLoadErr);
         await clearIndexedDBCache();
@@ -107,7 +107,7 @@ export async function loadNeuroScanModel(
     }
 
     if (!model) {
-      // 3B. Download from public/tfjs_model/model.json
+      // 3B. Download from public/tfjs_model/model.json using tf.loadGraphModel
       onStatusUpdate({
         state: 'downloading',
         backend,
@@ -136,7 +136,7 @@ export async function loadNeuroScanModel(
         }
       }
 
-      model = await tf.loadLayersModel(MODEL_CONFIG.LOCAL_MODEL_PATH, {
+      model = await tf.loadGraphModel(MODEL_CONFIG.LOCAL_MODEL_PATH, {
         onProgress: (fraction) => {
           const pct = Math.round(15 + fraction * 70);
           onStatusUpdate({
@@ -170,9 +170,12 @@ export async function loadNeuroScanModel(
     // Execute warmup inside tf.tidy to avoid tensor leak
     tf.tidy(() => {
       const dummy = tf.zeros([1, MODEL_CONFIG.INPUT_WIDTH, MODEL_CONFIG.INPUT_HEIGHT, MODEL_CONFIG.INPUT_CHANNELS]);
-      const warmupRes = model.predict(dummy) as tf.Tensor;
-      // dataSync forces execution and compiles shaders
-      warmupRes.dataSync();
+      const warmupRes = model.predict(dummy);
+      if (Array.isArray(warmupRes)) {
+        warmupRes.forEach((t) => t.dataSync());
+      } else if (warmupRes instanceof tf.Tensor) {
+        warmupRes.dataSync();
+      }
     });
 
     cachedModel = model;
@@ -190,16 +193,18 @@ export async function loadNeuroScanModel(
     return model;
   } catch (err: any) {
     console.error('Error in loadNeuroScanModel:', err);
-    
-    // Check if it's missing files
-    const is404 = err.message?.includes('404') || err.message?.includes('MODEL_NOT_FOUND') || err.message?.includes('Failed to fetch');
+
+    const is404 =
+      err.message?.includes('404') ||
+      err.message?.includes('MODEL_NOT_FOUND') ||
+      err.message?.includes('Failed to fetch');
 
     onStatusUpdate({
       state: is404 ? 'model-missing' : 'error',
       backend: currentBackend,
       progress: 0,
       isCachedInIndexedDB: false,
-      errorMessage: is404 
+      errorMessage: is404
         ? 'Model files not found in public/tfjs_model/. Please drop model.json and weight shards into public/tfjs_model/.'
         : `Model initialization failed: ${err.message || 'Unknown error'}`,
       ...getTfMemoryInfo(),

@@ -107,9 +107,12 @@ flowchart TD
 2. **Cache-First Loading Strategy (`model-loader.ts`):**
    - Query IndexedDB using `await tf.io.listModels()`.
    - If `indexeddb://neuroscan-model` exists:
-     - Load directly from IndexedDB without network requests.
+     - Load directly from IndexedDB via `tf.loadGraphModel('indexeddb://neuroscan-model')`.
    - If not cached:
-     - Stream model artifacts from `/tfjs_model/model.json` with an `onProgress` callback providing real-time download fraction (`0.0` to `1.0`).
+     - Stream model artifacts from `/tfjs_model/model.json` with an `onProgress` callback providing real-time download fraction (`0.0` to `1.0`):
+       ```typescript
+       model = await tf.loadGraphModel('/tfjs_model/model.json', { onProgress });
+       ```
      - Upon completion, asynchronously persist to browser storage:
        ```typescript
        await model.save('indexeddb://neuroscan-model');
@@ -130,7 +133,7 @@ flowchart TD
    ```typescript
    export async function classifyMRI(
      imageElement: HTMLImageElement | HTMLCanvasElement,
-     model: tf.LayersModel
+     model: tf.GraphModel
    ): Promise<InferenceOutput> {
      const startTime = performance.now();
 

@@ -52,7 +52,7 @@ export default function NeuroScanPage() {
     memoryBytes: 0,
   });
 
-  const [loadedModel, setLoadedModel] = useState<tf.LayersModel | null>(null);
+  const [loadedModel, setLoadedModel] = useState<tf.GraphModel | null>(null);
   const [activeTensors, setActiveTensors] = useState<number>(0);
 
   // Scan & Inference state

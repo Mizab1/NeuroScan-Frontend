@@ -8,7 +8,7 @@ import { TumorClass, ClassProbability, InferenceResult } from './types';
  */
 export async function runModelInference(
   imageSource: HTMLImageElement | HTMLCanvasElement,
-  model: tf.LayersModel
+  model: tf.GraphModel | tf.LayersModel
 ): Promise<InferenceResult> {
   const startTime = performance.now();
 
@@ -28,13 +28,15 @@ export async function runModelInference(
     // 4. Reshape to batch format: [1, 256, 256, 3]
     const batchedTensor = normalizedTensor.expandDims(0);
 
-    // 5. Execute model forward pass
-    const outputTensor = model.predict(batchedTensor) as tf.Tensor;
+    // 5. Execute model forward pass (handles GraphModel and LayersModel return types)
+    const output = model.predict(batchedTensor);
+    const outputTensor = Array.isArray(output) ? output[0] : (output as tf.Tensor);
 
     // 6. Ensure probabilities sum to 1.0 (apply softmax if raw logits are returned)
-    const probTensor = outputTensor.shape.length > 1 && outputTensor.shape[1] === 4
-      ? tf.softmax(outputTensor)
-      : outputTensor;
+    const probTensor =
+      outputTensor.shape.length > 1 && outputTensor.shape[1] === 4
+        ? tf.softmax(outputTensor)
+        : outputTensor;
 
     // 7. Extract data to typed array
     const data = probTensor.dataSync();

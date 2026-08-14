@@ -10,6 +10,7 @@ public/tfjs_model/
 ```
 
 ## Expected Model Architecture:
+
 - **Input shape:** `(1, 256, 256, 3)` (RGB image resized to 256x256, normalized to [0, 1])
 - **Output classes:** 4 units (Softmax) in order:
   1. `Glioma`
