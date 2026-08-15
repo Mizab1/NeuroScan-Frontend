@@ -120,7 +120,6 @@ flowchart TD
 
     L[User Selects / Drops MRI Image] --> M[Validate Format & Dimensions]
     
-    %% Split the K & M --> N into two explicit lines to prevent layout crashing
     K --> N[Trigger Inference in tf.tidy]
     M --> N
     
@@ -149,7 +148,7 @@ flowchart TD
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/Mizab1/NeuroScan-V2.git
+git clone https://github.com/Mizab1/NeuroScan-Frontend.git
 cd NeuroScan-V2
 npm install
 ```
@@ -213,4 +212,4 @@ tensorflowjs_converter \
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
